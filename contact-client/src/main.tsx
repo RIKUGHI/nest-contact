@@ -1,49 +1,8 @@
-import React, { Suspense, PropsWithChildren, FC, lazy } from "react"
+import React, { FC, PropsWithChildren, Suspense, lazy } from "react"
 import ReactDOM from "react-dom/client"
-import App from "./App.tsx"
+import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom"
 import "./index.css"
-import {
-  createBrowserRouter,
-  Link,
-  RouterProvider,
-  BrowserRouter,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom"
-
-const navigations = [
-  {
-    to: "/",
-    label: "User",
-  },
-  {
-    to: "contacts",
-    label: "Contact",
-  },
-  {
-    to: "addresses",
-    label: "Address",
-  },
-]
-
-const Navigation: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <div>
-      <nav className="flex justify-center space-x-2 p-2">
-        {navigations.map((navigation) => (
-          <Link
-            to={navigation.to}
-            className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          >
-            {navigation.label}
-          </Link>
-        ))}
-      </nav>
-      <main>{children}</main>
-    </div>
-  )
-}
+import { Navigation } from "./components/atoms"
 
 const LoadingPage = () => {
   return <h1 className="m-auto block">Loading...</h1>

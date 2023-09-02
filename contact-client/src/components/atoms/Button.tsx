@@ -3,17 +3,54 @@ import { VariantProps, cva } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "flex px-4 h-9 items-center justify-center rounded-md text-white",
+  "flex px-2 h-9 items-center justify-center rounded-md",
   {
     variants: {
+      appearance: {
+        solid: "text-white font-bold text-sm",
+        outlined: "border",
+      },
       variant: {
-        default: "bg-green-600",
-        blue: "bg-blue-600",
-        red: "bg-red-600",
+        primary: "",
+        blue: "",
+        red: "",
       },
     },
+    compoundVariants: [
+      {
+        appearance: "solid",
+        variant: "primary",
+        className: "bg-green-600",
+      },
+      {
+        appearance: "solid",
+        variant: "blue",
+        className: "bg-blue-600",
+      },
+      {
+        appearance: "solid",
+        variant: "red",
+        className: "bg-red-600",
+      },
+      {
+        appearance: "outlined",
+        variant: "primary",
+        className: "border-green-600 bg-green-50",
+      },
+      {
+        appearance: "outlined",
+        variant: "blue",
+        className: "border-blue-600 bg-blue-50",
+      },
+      {
+        appearance: "outlined",
+        variant: "red",
+        className: "border-red-600 bg-red-50",
+      },
+    ],
     defaultVariants: {
-      variant: "default",
+      appearance: "solid",
+      variant: "primary",
     },
   }
 )
@@ -23,11 +60,11 @@ interface ButtonProps
     VariantProps<typeof buttonVariants> {}
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, ...props }, ref) => {
+  ({ className, appearance, variant, ...props }, ref) => {
     return (
       <button
         ref={ref}
-        className={cn(buttonVariants({ variant, className }))}
+        className={cn(buttonVariants({ appearance, variant, className }))}
         {...props}
       />
     )
