@@ -1,0 +1,133 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "User API",
+    "description": "User API",
+    "version": "1.0"
+  },
+  "servers": [{ "url": "http://localhost:8000" }],
+  "paths": {
+    "/api/users": {
+      "post": {
+        "description": "Register new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "ricky": {
+                  "description": "Register user ricky",
+                  "value": {
+                    "username": "ricky",
+                    "password": "rahasia",
+                    "name": "ricky 123"
+                  }
+                }
+              },
+              "schema": {
+                "type": "object",
+                "required": ["name", "password", "username"],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validationerror": {
+                    "description": "Validation error",
+                    "value": {
+                      "errors": {
+                        "username": [
+                          "username must not be blank",
+                          "username min 6 characters"
+                        ],
+                        "name": [
+                          "username must not be blank",
+                          "username min 6 characters"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success register user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "description": "Success register user",
+                    "value": {
+                      "data": {
+                        "id": 1,
+                        "name": "ricky 123",
+                        "username": "ricky",
+                        "usernamex": "rickyx"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "description": "Login User"
+      }
+    },
+    "/api/users/current": {
+      "get": {
+        "description": "Get current user"
+      },
+      "patch": {
+        "description": "Update current user"
+      }
+    },
+    "/api/users/logout": {
+      "delete": {
+        "description": "Logout current user"
+      }
+    }
+  }
+}
