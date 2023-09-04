@@ -14,6 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User as UserModel } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -35,9 +36,10 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    return this.usersService.findAll();
+  async findAll() {
+    return {
+      data: await this.usersService.findAll({}),
+    };
   }
 
   @Get(':id')
