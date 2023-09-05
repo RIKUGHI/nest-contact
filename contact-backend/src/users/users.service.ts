@@ -3,25 +3,59 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { User, Prisma } from '@prisma/client';
+import { WithPagination } from 'src/interfaces';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    return this.prisma.user.create({
+      data: createUserDto,
+    });
   }
 
-  findAll(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async findAll(params: {
+    page: number;
+    q: string;
+  }): Promise<WithPagination<User[]>> {
+    const { page, q } = params;
+    const take = 2;
+    const skip = (page - 1) * take;
 
-    return this.prisma.user.findMany({ skip, take, cursor, where, orderBy });
+    const where: Prisma.UserWhereInput = {
+      OR: [
+        {
+          name: {
+            contains: q,
+          },
+        },
+        {
+          username: {
+            contains: q,
+          },
+        },
+      ],
+    };
+
+    const [users, count] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where,
+        take,
+        skip,
+      }),
+      this.prisma.user.count({
+        where,
+      }),
+    ]);
+
+    return {
+      total: count,
+      per_page: take,
+      current_page: page,
+      last_page: Math.ceil(count / take),
+      data: users,
+    };
   }
 
   findOne(id: number) {

@@ -10,11 +10,13 @@ import {
   Query,
   HttpStatus,
   HttpException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User as UserModel } from '@prisma/client';
+import { ApiResponse, WithPagination } from 'src/interfaces';
 
 @Controller('users')
 export class UsersController {
@@ -30,15 +32,21 @@ export class UsersController {
   // }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return createUserDto;
-    return this.usersService.create(createUserDto);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ApiResponse<UserModel>> {
+    return {
+      data: await this.usersService.create(createUserDto),
+    };
   }
 
   @Get()
-  async findAll() {
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('q') q = '',
+  ): Promise<ApiResponse<WithPagination<UserModel[]>>> {
     return {
-      data: await this.usersService.findAll({}),
+      data: await this.usersService.findAll({ page, q }),
     };
   }
 
