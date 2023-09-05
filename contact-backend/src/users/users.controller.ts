@@ -1,35 +1,26 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Header,
-  Query,
+  Get,
   HttpStatus,
-  HttpException,
+  Param,
   ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Res,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { User as UserModel } from '@prisma/client';
+import { Response } from 'express';
+import { ApiResponse, WithPagination } from 'src/interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User as UserModel } from '@prisma/client';
-import { ApiResponse, WithPagination } from 'src/interfaces';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  // @Post('test')
-  // test(@Body() body, @Param() param, @Query() query) {
-  //   return {
-  //     body,
-  //     param,
-  //     query,
-  //   };
-  // }
 
   @Post()
   async create(
@@ -46,22 +37,49 @@ export class UsersController {
     @Query('q') q = '',
   ): Promise<ApiResponse<WithPagination<UserModel[]>>> {
     return {
-      data: await this.usersService.findAll({ page, q }),
+      data: await this.usersService.users({ page, q }),
     };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponse<UserModel>> {
+    return {
+      data: await this.usersService.user({ id }),
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ApiResponse<boolean>> {
+    const user = await this.usersService.update(+id, updateUserDto);
+
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      data: user ? true : false,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = await this.usersService.remove(+id);
+
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      data: user ? true : false,
+    };
   }
 }

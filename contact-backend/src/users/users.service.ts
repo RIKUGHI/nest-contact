@@ -9,18 +9,20 @@ import { WithPagination } from 'src/interfaces';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
+  async user(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: userWhereUniqueInput,
     });
   }
 
-  async findAll(params: {
+  async users(params: {
     page: number;
     q: string;
   }): Promise<WithPagination<User[]>> {
     const { page, q } = params;
-    const take = 2;
+    const take = 5;
     const skip = (page - 1) * take;
 
     const where: Prisma.UserWhereInput = {
@@ -58,15 +60,32 @@ export class UsersService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return this.prisma.user.create({
+      data: createUserDto,
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<null | User> {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      return null;
+    }
+
+    return this.prisma.user.update({
+      data: updateUserDto,
+      where: { id },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      return null;
+    }
+
+    return this.prisma.user.delete({ where: { id } });
   }
 }

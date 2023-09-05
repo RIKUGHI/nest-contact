@@ -8,4 +8,5 @@ export interface WithPagination<T> {
 
 export interface ApiResponse<T> {
   data: T;
+  message?: string;
 }
