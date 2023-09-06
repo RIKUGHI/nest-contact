@@ -1,10 +1,9 @@
-import { Controller, Post, Body, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { Guest } from './auth.decorator';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-user.dto';
-import { Request, Response } from 'express';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { SetMetadata } from '@nestjs/common';
-import { Guest } from './auth.decorator';
 
 @Controller('/auth')
 export class AuthController {

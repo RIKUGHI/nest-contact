@@ -12,14 +12,15 @@ import {
   Res,
   UseGuards,
   Req,
+  NotFoundException,
 } from '@nestjs/common';
 import { User as UserModel } from '@prisma/client';
-import { Response } from 'express';
 import { ApiResponse, WithPagination } from 'src/interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/authentication/auth.guard';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -35,14 +36,10 @@ export class UsersController {
   }
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
   async findAll(
     @Query('page') page: number = 1,
     @Query('q') q = '',
-    @Req() req,
   ): Promise<ApiResponse<WithPagination<UserModel[]>>> {
-    // console.log(req.user);
-
     return {
       data: await this.usersService.users({ page, q }),
     };
@@ -51,10 +48,22 @@ export class UsersController {
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ApiResponse<UserModel>> {
-    return {
-      data: await this.usersService.user({ id }),
-    };
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    try {
+      const user = await this.usersService.user({ id });
+
+      res.json({
+        data: user,
+      });
+    } catch (error) {
+      res
+        .status(error instanceof NotFoundException ? error.getStatus() : 500)
+        .json({
+          data: null,
+          message: error instanceof NotFoundException ? error.message : error,
+        });
+    }
   }
 
   @Patch(':id')
@@ -62,16 +71,21 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ApiResponse<boolean>> {
-    const user = await this.usersService.update(+id, updateUserDto);
+  ): Promise<any> {
+    try {
+      const user = await this.usersService.update(+id, updateUserDto);
 
-    if (!user) {
-      res.status(HttpStatus.NOT_FOUND);
+      res.json({
+        data: user,
+      });
+    } catch (error) {
+      res
+        .status(error instanceof NotFoundException ? error.getStatus() : 500)
+        .json({
+          data: null,
+          message: error instanceof NotFoundException ? error.message : error,
+        });
     }
-
-    return {
-      data: user ? true : false,
-    };
   }
 
   @Delete(':id')
@@ -79,14 +93,19 @@ export class UsersController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = await this.usersService.remove(+id);
+    try {
+      const user = await this.usersService.remove(+id);
 
-    if (!user) {
-      res.status(HttpStatus.NOT_FOUND);
+      res.json({
+        data: true,
+      });
+    } catch (error) {
+      res
+        .status(error instanceof NotFoundException ? error.getStatus() : 500)
+        .json({
+          data: null,
+          message: error instanceof NotFoundException ? error.message : error,
+        });
     }
-
-    return {
-      data: user ? true : false,
-    };
   }
 }
