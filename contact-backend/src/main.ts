@@ -9,6 +9,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+  });
   await app.listen(3000);
 }
 bootstrap();

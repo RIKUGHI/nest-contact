@@ -10,6 +10,8 @@ import {
   Post,
   Query,
   Res,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { User as UserModel } from '@prisma/client';
 import { Response } from 'express';
@@ -17,6 +19,7 @@ import { ApiResponse, WithPagination } from 'src/interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from 'src/authentication/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -32,10 +35,14 @@ export class UsersController {
   }
 
   @Get()
+  // @UseGuards(JwtAuthGuard)
   async findAll(
     @Query('page') page: number = 1,
     @Query('q') q = '',
+    @Req() req,
   ): Promise<ApiResponse<WithPagination<UserModel[]>>> {
+    // console.log(req.user);
+
     return {
       data: await this.usersService.users({ page, q }),
     };
