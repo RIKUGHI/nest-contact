@@ -12,7 +12,6 @@ export class AuthController {
   @Guest()
   @Post('/login')
   async login(
-    @Req() request: Request,
     @Res() response: Response,
     @Body() loginDto: LoginDto,
   ): Promise<any> {
@@ -26,14 +25,14 @@ export class AuthController {
     } catch (err) {
       return response.status(500).json({
         status: 'Error!',
-        message: 'Internal Server Error!',
+        message: err.message,
       });
     }
   }
 
+  @Guest()
   @Post('/register')
   async register(
-    @Req() request: Request,
     @Res() response: Response,
     @Body() registerDto: RegisterUserDto,
   ): Promise<any> {
@@ -45,7 +44,6 @@ export class AuthController {
         result: result,
       });
     } catch (err) {
-      console.log(err);
       return response.status(500).json({
         status: 'Error!',
         message: 'Internal Server Error!',
