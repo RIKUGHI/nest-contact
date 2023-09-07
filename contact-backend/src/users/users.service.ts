@@ -1,10 +1,10 @@
-import { HttpCode, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { WithPagination } from 'src/interfaces';
+import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma.service';
-import { User, Prisma } from '@prisma/client';
-import { WithPagination } from 'src/interfaces';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -65,10 +65,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     return this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: await bcrypt.hash(createUserDto.password, 10),
-      },
+      data: createUserDto,
     });
   }
 
