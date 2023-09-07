@@ -15,7 +15,7 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { ApiResponse, WithPagination } from 'src/interfaces';
 import { Contact as ContactModel, User } from '@prisma/client';
-import { AuthUser } from 'src/authentication/auth.decorator';
+import { AuthUser, Role, Roles } from 'src/authentication/auth.decorator';
 import { Response } from 'express';
 
 @Controller('contacts')
@@ -33,6 +33,7 @@ export class ContactsController {
   }
 
   @Get()
+  // @Roles(Role.Admin)
   async findAll(
     @Query('page') page: number = 1,
     @Query('q') q = '',
