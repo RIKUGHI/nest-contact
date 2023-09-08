@@ -10,7 +10,8 @@ const LoadingPage = () => {
 
 const UserPage = lazy(() => import("./pages/users/index.tsx"))
 const ContactPage = lazy(() => import("./pages/contacts/index.tsx"))
-const AddressPage = lazy(() => import("./pages/addresses/index.tsx"))
+const LoginPage = lazy(() => import("./pages/login/index.tsx"))
+const RegisterPage = lazy(() => import("./pages/register/index.tsx"))
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -41,10 +42,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             }
           />
           <Route
-            path="/addresses"
+            path="/login"
             element={
               <Suspense fallback={<LoadingPage />}>
-                <AddressPage />
+                <LoginPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Suspense fallback={<LoadingPage />}>
+                <RegisterPage />
               </Suspense>
             }
           />

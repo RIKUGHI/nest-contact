@@ -10,8 +10,9 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://127.0.0.1:5173'],
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+    credentials: true,
   });
   await app.listen(3000);
 }

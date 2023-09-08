@@ -11,8 +11,12 @@ const navigations = [
     label: "Contact",
   },
   {
-    to: "addresses",
-    label: "Address",
+    to: "login",
+    label: "Login",
+  },
+  {
+    to: "register",
+    label: "Register",
   },
 ]
 
