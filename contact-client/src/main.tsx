@@ -1,8 +1,10 @@
-import React, { FC, PropsWithChildren, Suspense, lazy } from "react"
+import React, { Suspense, lazy } from "react"
+import { AuthProvider, RequireAuth } from "react-auth-kit"
 import ReactDOM from "react-dom/client"
-import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom"
-import "./index.css"
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom"
 import { Navigation } from "./components/atoms"
+import "./index.css"
+import AuthOnly from "./pages/AuthOnly.tsx"
 
 const LoadingPage = () => {
   return <h1 className="m-auto block">Loading...</h1>
@@ -12,8 +14,6 @@ const UserPage = lazy(() => import("./pages/users/index.tsx"))
 const ContactPage = lazy(() => import("./pages/contacts/index.tsx"))
 const LoginPage = lazy(() => import("./pages/login/index.tsx"))
 const RegisterPage = lazy(() => import("./pages/register/index.tsx"))
-import { AuthProvider, RequireAuth } from "react-auth-kit"
-import AuthOnly from "./pages/AuthOnly.tsx"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

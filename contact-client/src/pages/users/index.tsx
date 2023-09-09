@@ -1,11 +1,11 @@
 import { FC, useEffect, useState } from "react"
-import UserCard from "./UserCard"
-import { Button, Modal } from "../../components/atoms"
-import CreateUserModal from "./CreateUserModal"
-import DetailUserModal from "./DetailUserModal"
-import DeleteUserModal from "./DeleteUserModal"
+import { useAuthUser } from "react-auth-kit"
+import { Button } from "../../components/atoms"
 import axios from "../../libs/axios"
-import { useSignOut, useAuthUser, useAuthHeader } from "react-auth-kit"
+import CreateUserModal from "./CreateUserModal"
+import DeleteUserModal from "./DeleteUserModal"
+import DetailUserModal from "./DetailUserModal"
+import UserCard from "./UserCard"
 
 const index: FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
