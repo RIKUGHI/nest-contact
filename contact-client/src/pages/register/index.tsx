@@ -21,11 +21,12 @@ const index: FC = () => {
         username,
         password,
       })
+      console.log(res)
 
       setMessage(res.data.message)
-      setName("")
-      setUsername("")
-      setPassword("")
+      // setName("")
+      // setUsername("")
+      // setPassword("")
       setErrors([])
     } catch (error: any) {
       setErrors(error.response.data.message)
@@ -73,6 +74,7 @@ const index: FC = () => {
                 name="name"
                 type="name"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
@@ -91,6 +93,7 @@ const index: FC = () => {
                 name="username"
                 type="username"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
@@ -119,6 +122,7 @@ const index: FC = () => {
                 name="password"
                 type="password"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>

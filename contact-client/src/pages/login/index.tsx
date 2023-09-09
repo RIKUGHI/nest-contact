@@ -1,18 +1,67 @@
-import { FC } from "react"
+import { FC, FormEvent, useEffect, useState } from "react"
+import axios from "../../libs/axios"
+import { useSignIn } from "react-auth-kit"
 
-interface indexProps {}
+const index: FC = () => {
+  const signIn = useSignIn()
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState("")
+  const [errors, setErrors] = useState<string>("")
 
-const index: FC<indexProps> = () => {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleLogin = async (e: FormEvent) => {
+    e.preventDefault()
+
+    setIsLoading(true)
+
+    try {
+      const res = await axios.post("/auth/login", {
+        username,
+        password,
+      })
+
+      // console.log(res.data.result.token)
+      signIn({
+        token: res.data.result.token,
+        expiresIn: 60,
+        tokenType: "Bearer",
+        authState: { username },
+      })
+
+      setMessage(res.data.message)
+      setUsername("")
+      setPassword("")
+      setErrors("")
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Login
         </h2>
+        {message ? (
+          <h3 className="text-green-500 text-xl font-bold">{message}</h3>
+        ) : null}
+        {errors ? (
+          <h3 className="text-green-500 text-xl font-bold">{errors}</h3>
+        ) : null}
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" action="#" method="POST">
+        <form
+          className="space-y-6"
+          action="#"
+          method="POST"
+          onSubmit={handleLogin}
+        >
           <div>
             <label
               htmlFor="username"
@@ -27,6 +76,8 @@ const index: FC<indexProps> = () => {
                 type="username"
                 required
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>
@@ -55,16 +106,18 @@ const index: FC<indexProps> = () => {
                 type="password"
                 required
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
 
           <div>
             <button
-              type="submit"
+              type={isLoading ? "button" : "submit"}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign in
+              {isLoading ? "Loading" : "Login"}
             </button>
           </div>
         </form>

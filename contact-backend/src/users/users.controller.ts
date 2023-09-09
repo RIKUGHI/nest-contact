@@ -21,6 +21,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/authentication/auth.guard';
 import { Response } from 'express';
+import { Guest } from 'src/authentication/auth.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -36,6 +37,7 @@ export class UsersController {
   }
 
   @Get()
+  @Guest()
   async findAll(
     @Query('page') page: number = 1,
     @Query('q') q = '',

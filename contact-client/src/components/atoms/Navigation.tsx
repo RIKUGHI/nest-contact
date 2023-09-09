@@ -18,6 +18,10 @@ const navigations = [
     to: "register",
     label: "Register",
   },
+  {
+    to: "auth-only",
+    label: "Auth Only",
+  },
 ]
 
 const Navigation: FC<PropsWithChildren> = ({ children }) => {

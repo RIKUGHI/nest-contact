@@ -10,8 +10,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User> {
+  async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<any> {
     const user = await this.prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        _count: {
+          select: {
+            contacts: true,
+          },
+        },
+      },
       where: userWhereUniqueInput,
     });
 
@@ -23,7 +33,7 @@ export class UsersService {
   async users(params: {
     page: number;
     q: string;
-  }): Promise<WithPagination<User[]>> {
+  }): Promise<WithPagination<any[]>> {
     const { page, q } = params;
     const take = 5;
     const skip = (page - 1) * take;
@@ -45,6 +55,16 @@ export class UsersService {
 
     const [users, count] = await this.prisma.$transaction([
       this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          _count: {
+            select: {
+              contacts: true,
+            },
+          },
+        },
         where,
         take,
         skip,

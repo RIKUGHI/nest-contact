@@ -33,21 +33,39 @@ export class AuthController {
   @Guest()
   @Post('/register')
   async register(
+    @Req() req: Request,
     @Res() response: Response,
     @Body() registerDto: RegisterUserDto,
   ): Promise<any> {
-    try {
-      const result = await this.authService.register(registerDto);
-      return response.status(200).json({
-        status: 'Ok!',
-        message: 'Successfully register user!',
-        result: result,
-      });
-    } catch (err) {
-      return response.status(500).json({
-        status: 'Error!',
-        message: 'Internal Server Error!',
-      });
-    }
+    // response.cookie('kesapian', 'lol', {
+    //   httpOnly: true,
+    //   sameSite: 'none',
+    //   secure: true,
+    //   maxAge: 1 * 60 * 1000,
+    // });
+    // response.clearCookie('kesapian', {
+    //   httpOnly: true,
+    //   sameSite: 'none',
+    //   secure: true,
+    // });
+    // console.log(req.headers.cookie);
+    // console.log(req.cookies);
+
+    return response.json({
+      message: 'sapi',
+    });
+    // try {
+    //   const result = await this.authService.register(registerDto);
+    //   return response.status(200).json({
+    //     status: 'Ok!',
+    //     message: 'Successfully register user!',
+    //     result: result,
+    //   });
+    // } catch (err) {
+    //   return response.status(500).json({
+    //     status: 'Error!',
+    //     message: 'Internal Server Error!',
+    //   });
+    // }
   }
 }
