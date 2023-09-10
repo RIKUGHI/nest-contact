@@ -5,12 +5,23 @@ const useUsers = () => {
   const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
-    fetchUser()
+    let isMounted = true
+    const controller = new AbortController()
+
+    if (isMounted) fetchUser(controller.signal)
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
   }, [])
 
-  const fetchUser = async () => {
+  const fetchUser = async (signal: AbortSignal) => {
     try {
-      const res = await axios.get<ApiResponse<WithPagination<User[]>>>("/users")
+      const res = await axios.get<ApiResponse<WithPagination<User[]>>>(
+        "/users",
+        { signal }
+      )
       setUsers(res.data.data.data)
     } catch (error) {}
   }

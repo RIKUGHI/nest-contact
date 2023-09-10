@@ -1,8 +1,8 @@
-import { FC, useState, FormEvent, useEffect } from "react"
+import { QueryClient, useMutation } from "@tanstack/react-query"
+import { FC, FormEvent, useState } from "react"
+import { useAuthHeader } from "react-auth-kit"
 import { Button, Modal } from "../../components/atoms"
 import axios from "../../libs/axios"
-import { useAuthHeader } from "react-auth-kit"
-import { AxiosError } from "axios"
 
 interface CreateUserModalProps {
   show: boolean
@@ -10,23 +10,19 @@ interface CreateUserModalProps {
   onSuccess: () => void
 }
 
+const queryClient = new QueryClient()
+
 const CreateContactModal: FC<CreateUserModalProps> = ({
   show,
   setShow,
   onSuccess,
 }) => {
   const authHeader = useAuthHeader()
+  const { isLoading, mutate } = useMutation({
+    mutationFn: async (d) => {
+      console.log(d)
 
-  const [first_name, setFirstName] = useState("")
-  const [last_name, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-
-    try {
-      const res = await axios.post(
+      return await axios.post(
         "/contacts",
         {
           first_name,
@@ -40,13 +36,24 @@ const CreateContactModal: FC<CreateUserModalProps> = ({
           },
         }
       )
-
+    },
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries({ queryKey: ["contacts"] })
+      // queryClient.refetchQueries({ queryKey: ["contacts"] })
+      console.log(data, variables, context)
       onSuccess()
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        alert(error.response?.data.message)
-      }
-    }
+    },
+  })
+
+  const [first_name, setFirstName] = useState("")
+  const [last_name, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+
+    mutate()
   }
 
   return (
@@ -55,30 +62,36 @@ const CreateContactModal: FC<CreateUserModalProps> = ({
         className="bg-white w-[700px] m-auto p-5 rounded-md"
         onSubmit={handleSubmit}
       >
-        <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-xl font-semibold leading-7 text-gray-900 mb-5">
-            Create Contact
-          </h2>
+        {isLoading ? (
+          <h1>Loading...</h1>
+        ) : (
+          <>
+            <div className="border-b border-gray-900/10 pb-12">
+              <h2 className="text-xl font-semibold leading-7 text-gray-900 mb-5">
+                Create Contact
+              </h2>
 
-          <Input
-            label="First Name"
-            name="first_name"
-            onChange={(v) => setFirstName(v)}
-          />
-          <Input
-            label="Last Name"
-            name="last_name"
-            onChange={(v) => setLastName(v)}
-          />
-          <Input label="email" name="email" onChange={(v) => setEmail(v)} />
-          <Input label="phone" name="phone" onChange={(v) => setPhone(v)} />
-        </div>
-        <div className="mt-6 flex items-center justify-end gap-x-2">
-          <Button type="reset" variant="red" onClick={() => setShow(false)}>
-            Cancel
-          </Button>
-          <Button>Save</Button>
-        </div>
+              <Input
+                label="First Name"
+                name="first_name"
+                onChange={(v) => setFirstName(v)}
+              />
+              <Input
+                label="Last Name"
+                name="last_name"
+                onChange={(v) => setLastName(v)}
+              />
+              <Input label="email" name="email" onChange={(v) => setEmail(v)} />
+              <Input label="phone" name="phone" onChange={(v) => setPhone(v)} />
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-x-2">
+              <Button type="reset" variant="red" onClick={() => setShow(false)}>
+                Cancel
+              </Button>
+              <Button>Save</Button>
+            </div>
+          </>
+        )}
       </form>
     </Modal>
   )

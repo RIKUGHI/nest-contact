@@ -1,12 +1,12 @@
-import { FC, useState, useEffect } from "react"
+import { QueryFunctionContext, useQuery } from "@tanstack/react-query"
+import { FC, useState } from "react"
+import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit"
 import { Button } from "../../components/atoms"
-import { useAuthUser, useAuthHeader, useIsAuthenticated } from "react-auth-kit"
-import ContactCard from "./ContactCard"
 import axios from "../../libs/axios"
+import ContactCard from "./ContactCard"
 import CreateContactModal from "./CreateContactModal"
 import DeleteContactModal from "./DeleteContactModal"
 import UpdateContactModal from "./UpdateContactModal"
-import { AxiosError } from "axios"
 
 interface indexProps {}
 
@@ -20,30 +20,39 @@ const index: FC<indexProps> = () => {
   const auth = useAuthUser()
   const authHeader = useAuthHeader()
   const isAuthenticated = useIsAuthenticated()
-  const [contacts, setContacts] = useState<Contact[]>([])
 
-  useEffect(() => {
-    fetchContact()
-  }, [])
+  // const { contacts, refresh } = useContacts()
 
-  const fetchContact = async () => {
-    try {
-      const res = await axios.get<ApiResponse<WithPagination<Contact[]>>>(
-        "/contacts",
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
-        }
-      )
-      setContacts(res.data.data.data)
-    } catch (error) {}
+  const fetchContacts = async (d: QueryFunctionContext) => {
+    console.log(d)
+    const res = await axios.get<ApiResponse<WithPagination<Contact[]>>>(
+      "/contacts",
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+      }
+    )
+
+    return res.data.data.data
   }
+
+  const {
+    isError,
+    isLoading,
+    data: contacts,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["contacts"],
+    queryFn: fetchContacts,
+    staleTime: 5000, // 5 sec
+  })
 
   const handleSuccess = () => {
     setShowCreateModal(false)
     setSelectedContactId(null)
-    fetchContact()
+    refetch()
   }
 
   const handleUpdate = (id: number) => {
@@ -56,6 +65,9 @@ const index: FC<indexProps> = () => {
     setSelectedContactId(id)
   }
 
+  if (isLoading) return <h1>Loading contacts...</h1>
+  if (isError) return <h1>Error: {(error as any)?.response?.data?.message}</h1>
+
   return (
     <>
       <div className="p-5 flex justify-end">
@@ -67,7 +79,7 @@ const index: FC<indexProps> = () => {
       </div>
       <div className="p-5 flex flex-wrap gap-3">
         {isAuthenticated() ? (
-          contacts.map((contact) => (
+          contacts?.map((contact) => (
             <ContactCard
               key={contact.id}
               contact={contact}
