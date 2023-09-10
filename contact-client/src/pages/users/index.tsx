@@ -6,27 +6,15 @@ import CreateUserModal from "./CreateUserModal"
 import DeleteUserModal from "./DeleteUserModal"
 import DetailUserModal from "./DetailUserModal"
 import UserCard from "./UserCard"
+import useUsers from "./hooks/useUsers"
 
 const index: FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [modalType, setModalType] = useState<"detail" | "delete" | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<null | number>(null)
-  const [isDeleteModal, setIsDeleteModal] = useState(false)
 
   const auth = useAuthUser()
-  const [users, setUsers] = useState<User[]>([])
-
-  useEffect(() => {
-    fetchUser()
-  }, [])
-
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get<ApiResponse<WithPagination<User[]>>>("/users")
-      setUsers(res.data.data.data)
-      console.log(res.data.data.data)
-    } catch (error) {}
-  }
+  const { users } = useUsers()
 
   const handleDetail = (id: number) => {
     setModalType("detail")
@@ -50,10 +38,8 @@ const index: FC = () => {
             }
           />
         ))}
-
-        {/* <button onClick={() => setSelectedUserId(1)}>Test</button> */}
       </div>
-      <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} />
+      {/* <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} /> */}
       {selectedUserId && modalType === "detail" && (
         <DetailUserModal
           userId={selectedUserId}
