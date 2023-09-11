@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import axios from "../../../libs/axios"
 
+let didAuthenticate = false
+
 const useUsers = () => {
   const [users, setUsers] = useState<User[]>([])
 
@@ -8,8 +10,9 @@ const useUsers = () => {
     let isMounted = true
     const controller = new AbortController()
 
-    if (isMounted) fetchUser(controller.signal)
+    if (didAuthenticate) fetchUser(controller.signal)
 
+    didAuthenticate = true
     return () => {
       isMounted = false
       controller.abort()
